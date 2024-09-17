@@ -30,3 +30,15 @@ Follow the steps below to set up the project on your local machine:
    ```bash
    git clone https://github.com/Jabweli/laravel-ecomm-app.git
    cd ecommerce-laravel
+   
+2. **Install dependencies
+   ```bash
+   composer install
+   npm install
+   
+3. **Set up environment variables
+
+Copy the .env.example file to .env
+```bash
+cp .env.example .env
+
