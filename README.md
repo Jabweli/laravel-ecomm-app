@@ -37,8 +37,10 @@ Follow the steps below to set up the project on your local machine:
    npm install
    
 3. **Set up environment variables
+   Copy the .env.example file to .env
+   ```bash
+   cp .env.example .env
 
-Copy the .env.example file to .env
-```bash
-cp .env.example .env
+   - Update your .env file with the correct database credentials and other configuration settings: 
+
 
