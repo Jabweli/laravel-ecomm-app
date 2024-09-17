@@ -48,7 +48,8 @@ DB_DATABASE=your_database
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
-
+- The MySQL database file is included, import the tables it to your database:
+  
 ### 4. Generate application key
 ```bash
 php artisan key:generate
@@ -81,18 +82,7 @@ The site should now be accessible at `http://localhost:8000`.
 - **URL**: `/admin`
 - **Default Admin Credentials**:
   - Email: `admin@example.com`
-  - Password: `password`
-
-To create your own admin user, run:
-```bash
-php artisan tinker
-```
-
-Then use:
-```php
-User::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => bcrypt('your-password'), 'is_admin' => 1]);
-```
-
+  - Password: `admin123`
 
 ## Contributing
 
