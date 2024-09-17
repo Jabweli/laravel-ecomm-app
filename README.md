@@ -48,29 +48,19 @@ DB_DATABASE=your_database
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
-- The MySQL database file is included, import the tables it to your database:
+- The MySQL database file is included (named ecomm_db.sql), import the tables it to your database:
   
 ### 4. Generate application key
 ```bash
 php artisan key:generate
 ```
 
-### 5. Run migrations
-```bash
-php artisan migrate
-```
-
-### 6. Seed the database (optional)
-```bash
-php artisan db:seed
-```
-
-### 7. Compile assets
+### 5. Compile assets
 ```bash
 npm run dev
 ```
 
-### 8. Run the application
+### 6. Run the application
 ```bash
 php artisan serve
 ```
