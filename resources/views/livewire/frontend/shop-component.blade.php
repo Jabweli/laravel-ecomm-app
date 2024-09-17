@@ -1,0 +1,562 @@
+<div>
+   {{-- Knowing others is intelligence; knowing yourself is true wisdom. --}}
+
+   <main class="main">
+
+      <div class="container mt-50 mb-30">
+         <div class="row flex-row-reverse">
+            <div class="col-lg-9">
+               <div class="shop-product-fillter">
+                  <div class="totall-product">
+                     <p>We found <strong class="text-brand">{{$products->count()}}</strong> items for you!</p>
+                  </div>
+                  <div class="sort-by-product-area">
+                     <div class="sort-by-cover mr-10">
+                        <div class="sort-by-product-wrap">
+                           <div class="sort-by">
+                              <span><i class="fi-rs-apps"></i>Show:</span>
+                           </div>
+                           <div class="sort-by-dropdown-wrap">
+                              <span> {{$pageSize}} <i class="fi-rs-angle-small-down"></i></span>
+                           </div>
+                        </div>
+                        <div class="sort-by-dropdown">
+                           <ul>
+                              <li><a class="{{$pageSize == 12 ? 'active':''}}" href="#" wire:click.prevent="changePageSize(12)">12</a></li>
+                              <li><a class="{{$pageSize == 15 ? 'active':''}}" href="#" wire:click.prevent="changePageSize(15)">15</a></li>
+                              <li><a class="{{$pageSize == 25 ? 'active':''}}" href="#" wire:click.prevent="changePageSize(25)">25</a></li>
+                              <li><a class="{{$pageSize == 50 ? 'active':''}}" href="#" wire:click.prevent="changePageSize(50)">50</a></li>
+                           </ul>
+                        </div>
+                     </div>
+                     <div class="sort-by-cover">
+                        <div class="sort-by-product-wrap">
+                           <div class="sort-by">
+                              <span><i class="fi-rs-apps-sort"></i><span class="d-none d-md-inline">Sort by:</span></span>
+                           </div>
+                           <div class="sort-by-dropdown-wrap">
+                              <span> {{$orderBy}} <i class="fi-rs-angle-small-down"></i></span>
+                           </div>
+                        </div>
+                        <div class="sort-by-dropdown">
+                           <ul>
+                              <li><a class="{{$orderBy == 'Default Sorting' ? 'active':''}}" href="#" wire:click.prevent="changeOrderBy('Default Sorting')">Default Sorting</a></li>                   
+                              <li><a class="{{$orderBy == 'Price: Low to High' ? 'active':''}}" href="#" wire:click.prevent="changeOrderBy('Price: Low to High')">Price: Low to High</a></li>
+                              <li><a class="{{$orderBy == 'Price: High to Low' ? 'active':''}}" href="#" wire:click.prevent="changeOrderBy('Price: High to Low')">Price: High to Low</a></li>
+                              <li><a class="{{$orderBy == 'Sort by Latest' ? 'active':''}}" href="#" wire:click.prevent="changeOrderBy('Sort by Latest')">Sort by Latest</a></li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row product-grid">
+                  @php
+                     $witems = Cart::instance('wishlist')->content()->pluck('id');
+                  @endphp
+
+                  <div class="product-flex-wrapper">
+                     @foreach ($products as $pdt)
+                        <div class="product product-type-1 mb-20">
+                           <div class="product-wrapper">
+                              <div class="product-content">
+                                 <div class="thumbnail-wrapper entry-media">
+                                    <div class="product-badges">
+                                       @if ($pdt->badge == 'Discount')
+                                          <span class="badge hot">{{$pdt->discount}} %</span>
+                                       @else
+                                          <span class="badge {{strtolower($pdt->badge)}}">
+                                             {{$pdt->badge}}
+                                          </span>
+                                       @endif
+                                    </div>
+                                    <a class="product-thumbnail" href="{{url('product/'.$pdt->slug)}}">
+                                       <img decoding="async" src="{{asset('storage/products/'.$pdt->image)}}"
+                                       @if ($pdt->productImages->count() > 0)
+                                          data-hover-slides="
+                                             @forelse ($pdt->productImages as $item)                               
+                                                {{asset('storage/pdtgallery/'.$item->image)}} @if(!$loop->last) , @endif
+                                             @empty
+                                             @endforelse
+                                          " 
+                                          data-options='{"touch": "end", "preloadImages": true }' alt="{{$pdt->name}}"
+                                       @endif 
+                                       >
+                                    </a>
+                                    <div class="product-buttons">
+                                       <div wire:click="addToWishList({{$pdt->id}}, '{{$pdt->name}}', {{$pdt->sale_price}})">
+                                          <i class="klbth-icon-heart-empty"></i>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="content-wrapper">
+                                    <h3 class="product-title">
+                                       <a href="{{url('product/'.$pdt->slug)}}">{{$pdt->name}}</a>
+                                    </h3>
+                                    <div class="product-rate-cover">
+                                       <div class="product-rate d-inline-block">
+                                          <div class="product-rating" style="width: 90%"></div>
+                                       </div>
+                                       <span class="font-small ml-5 text-muted"> 1 review</span>
+                                    </div>
+                                    <span class="price">
+                                       <del aria-hidden="true">
+                                          <span class="amount">
+                                             <bdi>
+                                                <span class="">&#36;</span>
+                                                {{$pdt->regular_price}}
+                                             </bdi>
+                                          </span>
+                                       </del>
+                                       <ins>
+                                          <span class="amount">
+                                             <bdi>
+                                                <span class="">&#36;</span>
+                                                {{$pdt->sale_price}}
+                                             </bdi>
+                                          </span>
+                                       </ins>
+                                    </span>
+                                    @if ($pdt->in_stock == 'Instock')
+                                       <a href="#" class="shop-button" wire:click.prevent="store({{$pdt->id}}, '{{$pdt->name}}', {{$pdt->sale_price}})">
+                                          <i class="fi-rs-shopping-bag-add"></i>
+                                       </a>
+                                    @endif
+                                    <div class="product-stock in-stock">
+                                       <i class="klbth-icon-ecommerce-package-ready"></i>
+                                       <span>{{$pdt->in_stock == 'Instock' ? 'In Stock':'Out of Stock'}}</span>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="product-footer">
+                                 @if ($pdt->in_stock == 'Instock')
+                                    <div class="product-footer-inner">
+                                       <a href="#" class="add_to_cart_button ajax_add_to_cartdd" 
+                                       wire:click.prevent="store({{$pdt->id}}, '{{$pdt->name}}', {{$pdt->sale_price}})">
+                                          Add to cart <i class="klbth-icon-shopping-bag"></i>
+                                       </a>
+                                    </div>
+                                 @endif
+                              </div>
+                           </div>
+                           <div class="product-content-fade"></div>
+                        </div>
+                     @endforeach
+                  </div>
+               </div>
+
+
+               <!--pagination-->
+               <div class="pagination-area mt-20 mb-20">
+                  {{ $products->links('pagination-links') }}
+               </div>
+
+               <!--Deals of the day-->
+               <section class="section-padding pb-5">
+                  <div class="section-title">
+                     <h3 class="">Deals Of The Day</h3>
+                  </div>
+                  <div class="row">
+                     <div class="col-xl-4 col-lg-4 col-md-6">
+                        <div class="product-cart-wrap style-2">
+                           <div class="product-img-action-wrap">
+                              <div class="product-img">
+                                 <a href="shop-product-right.html">
+                                    <img src="{{asset('assets/imgs/banner/banner-6.png')}}" alt="banner" />
+                                 </a>
+                              </div>
+                           </div>
+                           <div class="product-content-wrap">
+                              <div class="deals-countdown-wrap">
+                                 <div class="deals-countdown" data-countdown="2024/04/25 00:00:00"></div>
+                              </div>
+                              <div class="deals-content">
+                                 <h2><a href="shop-product-right.html">Perdue Simply Smart Organics Gluten</a></h2>
+                                 <div class="product-rate-cover">
+                                    <div class="product-rate d-inline-block">
+                                       <div class="product-rating" style="width: 90%"></div>
+                                    </div>
+                                    <span class="font-small ml-5 text-muted"> (4.0)</span>
+                                 </div>
+                                 <div>
+                                    <span class="font-small text-muted">
+                                       By <a href="vendor-details-1.html">Old El Paso</a>
+                                    </span>
+                                 </div>
+                                 <div class="product-card-bottom">
+                                    <div class="product-price">
+                                       <span>$24.85</span>
+                                       <span class="old-price">$26.8</span>
+                                    </div>
+                                    <div class="add-cart">
+                                       <a class="add" href="shop-cart.html">
+                                          <i class="fi-rs-shopping-cart mr-5"></i>Add
+                                       </a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-xl-4 col-lg-4 col-md-6 d-none d-md-block">
+                        <div class="product-cart-wrap style-2">
+                           <div class="product-img-action-wrap">
+                              <div class="product-img">
+                                 <a href="shop-product-right.html">
+                                    <img src="{{asset('assets/imgs/banner/banner-7.png')}}" alt="banner" />
+                                 </a>
+                              </div>
+                           </div>
+                           <div class="product-content-wrap">
+                              <div class="deals-countdown-wrap">
+                                 <div class="deals-countdown" data-countdown="2027/03/25 00:00:00"></div>
+                              </div>
+                              <div class="deals-content">
+                                 <h2><a href="shop-product-right.html">Signature Wood-Fired Mushroom</a></h2>
+                                 <div class="product-rate-cover">
+                                    <div class="product-rate d-inline-block">
+                                       <div class="product-rating" style="width: 80%"></div>
+                                    </div>
+                                    <span class="font-small ml-5 text-muted"> (3.0)</span>
+                                 </div>
+                                 <div>
+                                    <span class="font-small text-muted">By <a
+                                          href="vendor-details-1.html">Progresso</a></span>
+                                 </div>
+                                 <div class="product-card-bottom">
+                                    <div class="product-price">
+                                       <span>$12.85</span>
+                                       <span class="old-price">$13.8</span>
+                                    </div>
+                                    <div class="add-cart">
+                                       <a class="add" href="shop-cart.html"><i class="fi-rs-shopping-cart mr-5"></i>Add
+                                       </a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-xl-4 col-lg-4 col-md-6 d-none d-xl-block">
+                        <div class="product-cart-wrap style-2">
+                           <div class="product-img-action-wrap">
+                              <div class="product-img">
+                                 <a href="shop-product-right.html">
+                                    <img src="{{asset('assets/imgs/banner/banner-8.png')}}" alt="banner" />
+                                 </a>
+                              </div>
+                           </div>
+                           <div class="product-content-wrap">
+                              <div class="deals-countdown-wrap">
+                                 <div class="deals-countdown" data-countdown="2025/02/25 00:00:00"></div>
+                              </div>
+                              <div class="deals-content">
+                                 <h2><a href="shop-product-right.html">Simply Lemonade with Raspberry Juice</a></h2>
+                                 <div class="product-rate-cover">
+                                    <div class="product-rate d-inline-block">
+                                       <div class="product-rating" style="width: 80%"></div>
+                                    </div>
+                                    <span class="font-small ml-5 text-muted"> (3.0)</span>
+                                 </div>
+                                 <div>
+                                    <span class="font-small text-muted">By <a
+                                          href="vendor-details-1.html">Yoplait</a></span>
+                                 </div>
+                                 <div class="product-card-bottom">
+                                    <div class="product-price">
+                                       <span>$15.85</span>
+                                       <span class="old-price">$16.8</span>
+                                    </div>
+                                    <div class="add-cart">
+                                       <a class="add" href="shop-cart.html"><i class="fi-rs-shopping-cart mr-5"></i>Add
+                                       </a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </section>
+               
+            </div>
+
+            <div class="col-lg-3 primary-sidebar sticky-sidebar" wire:ignore>
+               <div class="row">
+                  <div class="col-md-6 col-lg-12">
+                     <div class="sidebar-widget widget-category-2 mb-30">
+                        <h5 class="section-title style-1 mb-30">Category</h5>
+                        <ul>
+                           @foreach ($categories as $category)
+                              @if ($category->products->count() > 0)
+                                 <li>
+                                    <a href="{{url('products/category/'.$category->slug)}}"> 
+                                       <img src="{{asset('storage/categories/'.$category->image)}}" alt="{{$category->name}}" style="border-radius: 5px"/>
+                                       {{$category->name}}
+                                    </a>
+                                    <span class="count">{{$category->products->count()}}</span>
+                                 </li>
+                              @endif
+                           @endforeach
+                        </ul>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6 col-lg-12">
+                     <!-- Fillter By Price -->
+                     <div class="sidebar-widget price_range range mb-30">
+                        <h5 class="section-title style-1 mb-30">Fill by price</h5>
+                        <div class="price-filter">
+                           <div class="price-filter-inner">
+                              <div id="slider-range" class="mb-20" wire:ignore></div>
+                              <div class="d-flex justify-content-between">
+                                 <div class="caption">From: <strong id="slider-range-value1" class="text-brand"></strong>
+                                 </div>
+                                 <div class="caption">To: <strong id="slider-range-value2" class="text-brand"></strong></div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <!-- Product sidebar Widget -->
+                     <div class="sidebar-widget product-sidebar mb-30 p-30 bg-grey border-radius-10">
+                        <h5 class="section-title style-1 mb-30">New products</h5>
+
+                        @foreach ($new_products as $item)                     
+                           <div class="single-post clearfix">
+                              <div class="image">
+                                 <img src="{{asset('storage/products/'.$item->image)}}" alt="{{$item->image}}">
+                              </div>
+                              <div class="content pt-10">
+                                 <h6><a href="{{url('product/'.$item->slug)}}">{{$item->name}}</a></h6>
+                                 <p class="price mb-0 mt-5">${{$item->sale_price}}</p>
+                                 <div class="product-rate">
+                                    <div class="product-rating" style="width: 90%"></div>
+                                 </div>
+                              </div>
+                           </div>
+                        @endforeach
+                     </div>
+                  </div>
+               </div>
+
+               
+               <div class="banner-img wow fadeIn mb-lg-0 animated d-lg-block d-none">
+                  <img src="{{asset('assets/imgs/banner/banner-11.png')}}" alt="banner" />
+                  <div class="banner-text">
+                     <span>Oganic</span>
+                     <h4>
+                        Save 17% <br />
+                        on <span class="text-brand">Oganic</span><br />
+                        Juice
+                     </h4>
+                  </div>
+               </div>
+            </div>           
+         </div>
+      </div>
+   </main>
+
+
+
+<!-- Quick view modal-->
+<div wire:ignore.self class="modal fade custom-modal" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         <div class="modal-body">
+            <div class="row">
+                  <div class="col-md-6 col-sm-12 col-xs-12">
+                     <div class="detail-gallery">
+                        <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                        <!-- MAIN SLIDES -->
+                        <div class="product-image-slider">
+                           @if ($quick_pdt)                                 
+                              <figure class="border-radius-10">
+                                 <img src="{{asset('storage/products/'.$quick_pdt->image)}}" alt="product image">
+                              </figure>
+
+                              {{-- @forelse ($quick_pdt->productImages as $item)
+                                 <figure class="border-radius-10">
+                                    <img src="{{asset('storage/pdtgallery/'.$item->image)}}" alt="{{$item->image}}">
+                                 </figure>                                   
+                              @empty
+                                    
+                              @endforelse --}}
+                           @endif
+                        </div>
+                        <!-- THUMBNAILS -->
+                        <div class="slider-nav-thumbnails pl-15 pr-15">
+
+                           {{-- @if ($quick_pdt)                                 
+                              <div>
+                                 <img src="{{asset('storage/products/'.$quick_pdt->image )}}" alt="product image">
+                              </div>
+
+                              @forelse ($quick_pdt->productImages as $item)
+                                 <div>
+                                    <img src="{{asset('storage/pdtgallery/'.$item->image)}}" alt="product image">
+                                 </div>                                   
+                              @empty                                  
+                              @endforelse
+                           @endif --}}
+                           
+                        </div>
+                     </div>
+                     <!-- End Gallery -->
+                     <div class="social-icons single-share">
+                        <ul class="text-grey-5 d-inline-block">
+                              <li><strong class="mr-10">Share this:</strong></li>
+                              <li class="social-facebook">
+                              <a href="#">
+                                 <img src="{{asset('assets/imgs/theme/icons/icon-facebook.svg')}}" alt="facebook">
+                              </a>
+                           </li>
+                           <li class="social-twitter"> 
+                              <a href="#">
+                                 <img src="{{asset('assets/imgs/theme/icons/icon-twitter.svg')}}" alt="twitter">
+                              </a>
+                           </li>
+                           <li class="social-instagram">
+                              <a href="#">
+                                 <img src="{{asset('assets/imgs/theme/icons/icon-instagram.svg')}}" alt=instagram"">
+                              </a>
+                           </li>
+                           <li class="social-linkedin">
+                              <a href="#">
+                                 <img src="{{asset('assets/imgs/theme/icons/icon-pinterest.svg')}}" alt="pinterest">
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12 col-xs-12">
+                     <div class="detail-info">
+                        <h3 class="title-detail mt-30">{{$quick_pdt->name ?? 'Product name'}}</h3>
+                        <div class="product-detail-rating">
+                              <div class="pro-details-brand">
+                              @if ($quick_pdt)
+                                 <span> Category: <a href="{{url('products/category/'.$quick_pdt->category->slug)}}">{{$quick_pdt->category->name ?? 'N/A'}}</a></span>
+                              @endif
+                              </div>
+                              <div class="product-rate-cover text-end">
+                                 <div class="product-rate d-inline-block">
+                                    <div class="product-rating" style="width:90%">
+                                    </div>
+                                 </div>
+                                 <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                              </div>
+                        </div>
+                        <div class="clearfix product-price-cover">
+                              <div class="product-price primary-color float-left">
+                                 <ins><span class="text-brand">${{$quick_pdt->sale_price ?? 'N/A'}}</span></ins>
+                                 <ins><span class="old-price font-md ml-15">${{$quick_pdt->regular_price ?? 'N/A'}}</span></ins>
+                                 <span class="save-price  font-md color3 ml-15">{{$quick_pdt->discount ?? 'N/A'}}% Off</span>
+                              </div>
+                        </div>
+                        <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                        <div class="short-desc mb-30">
+                              <p class="font-sm">{{$quick_pdt->short_desc ?? 'N/A'}}</p>
+                        </div>
+
+                        <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                        <div class="detail-extralink">
+                              <div class="detail-qty border radius">
+                                 <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                 <span class="qty-val">1</span>
+                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                              </div>
+                              <div class="product-extra-link2">
+                                 <button type="submit" class="button button-add-to-cart">Add to cart</button>
+                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="wishlist.php"><i class="fi-rs-heart"></i></a>
+                                 <a aria-label="Compare" class="action-btn hover-up" href="compare.php"><i class="fi-rs-shuffle"></i></a>
+                              </div>
+                        </div>
+                        <ul class="product-meta font-xs color-grey mt-5">
+                              <li class="mb-5">SKU: <a href="#">{{$quick_pdt->sku ?? 'N/A'}}</a></li>
+                              <li>
+                              Availability:
+                              <span class="in-stock text-success ml-5">
+                                 @if ($quick_pdt)
+                                    {{
+                                       $quick_pdt->in_stock == 'Out of stock' ? 'Out of stock' : $quick_pdt->qtty." "."Items in stock"
+                                    }}
+                                 @endif
+                                 
+                              </span>
+                           </li>
+                        </ul>
+                     </div>
+                     <!-- Detail Info -->
+                  </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+<div wire:ignore.self class="modal fade" id="addcartModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-3">
+         <div class="">
+            <h1 class="modal-title fs-5">Complete your purchase</h1>
+            {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
+         </div>
+         <div class="modal-body">
+            <div class="row">
+               Product added to cart successfully!
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+   
+</div>
+
+
+
+
+@push('scripts')
+
+<script>
+   var modal = new bootstrap.Modal(document.getElementById('addcartModal'));
+   
+   document.addEventListener('livewire:initialized', () => {
+      @this.on('addedToCart', (event) => {
+         // alert('Added to cart successfully'); 
+         // modal.show();   
+         Swal.fire({
+            title: "Great!!!",
+            text: "Item has been added to cart",
+            // icon: "success"
+         });
+      });
+   });
+
+   var slider = document.getElementById('price-slider');
+   noUiSlider.create(slider, {
+      start : [1, 1000],
+      connect: true,
+      range: {
+         'min' : 1,
+         'max' : 1000
+      },
+      pips : {
+         mode: 'steps',
+         stepped: true,
+         density: 4
+      }
+   });
+
+   slider.noUiSlider.on('update', function(value){
+      @this.set('min_value', value[0]);
+      @this.set('max_value', value[1]);
+   });
+
+</script>
+
+
+@endpush
