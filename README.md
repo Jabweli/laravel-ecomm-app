@@ -27,7 +27,7 @@ Follow the steps below to set up the project on your local machine:
 
 ### 1. Clone the repository
 ```bash
-[git clone https://github.com/your-username/ecommerce-laravel.git](https://github.com/Jabweli/laravel-ecomm-app.git)
+git clone https://github.com/your-username/ecommerce-laravel.git
 cd ecommerce-laravel
 ```
 
